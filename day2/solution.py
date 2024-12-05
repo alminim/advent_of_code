@@ -9,14 +9,31 @@ def parse_input(input_file: Path) -> List[List[int]]:
     return parsed_reports
 
 
-def check_safety(report: List[int]) -> bool:
+def check_safety_without_level(report: List[int], level_to_ignore: int) -> bool:
+    if not report:
+        return False
+    report.pop(level_to_ignore)
+
     is_ascending = report[0] < report[len(report) - 1]
     for i in range(len(report) - 1):
         if not (1 <= abs(report[i] - report[i + 1]) <= 3) or (
             is_ascending != (report[i] < report[i + 1])
         ):
-            if not (1 <= abs(report[i - 1] - report[i + 1]) <= 3) or (
-                is_ascending != (report[i - 1] < report[i + 1])
+            return False
+    return True
+
+
+def check_safety(report: List[int]) -> bool:
+    if len(report) == 1:
+        return False
+    is_ascending = report[0] < report[len(report) - 1]
+    for i in range(len(report) - 1):
+        if not (1 <= abs(report[i] - report[i + 1]) <= 3) or (
+            is_ascending != (report[i] < report[i + 1])
+        ):
+            if not (
+                check_safety_without_level(report.copy(), i)
+                or check_safety_without_level(report.copy(), i + 1)
             ):
                 return False
     return True
