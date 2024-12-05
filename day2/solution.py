@@ -10,12 +10,15 @@ def parse_input(input_file: Path) -> List[List[int]]:
 
 
 def check_safety(report: List[int]) -> bool:
-    is_ascending = report[0] > report[1]
+    is_ascending = report[0] < report[len(report) - 1]
     for i in range(len(report) - 1):
         if not (1 <= abs(report[i] - report[i + 1]) <= 3) or (
-            is_ascending != (report[i] > report[i + 1])
+            is_ascending != (report[i] < report[i + 1])
         ):
-            return False
+            if not (1 <= abs(report[i - 1] - report[i + 1]) <= 3) or (
+                is_ascending != (report[i - 1] < report[i + 1])
+            ):
+                return False
     return True
 
 
