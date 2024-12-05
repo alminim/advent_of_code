@@ -13,9 +13,7 @@ def parse_input(input_file: Path) -> Tuple[List[int], List[int]]:
     return first_list, second_list
 
 
-def main():
-    input_file = Path(Path(__file__).parent, 'input.txt')
-    first_list, second_list = parse_input(input_file)
+def calculate_distance(first_list: List[int], second_list: List[int]) -> int:
     total_distance = 0
     for _ in range(min(len(first_list), len(second_list))):
         first_min = min(first_list)
@@ -25,8 +23,25 @@ def main():
         second_list.remove(second_min)
 
         total_distance += abs(first_min - second_min)
+    return total_distance
+
+
+def calculate_similarity(first_list: List[int], second_list: List[int]) -> int:
+    total_similarity = 0
+    for num in first_list:
+        total_similarity += num * second_list.count(num)
     
-    print(total_distance)
+    return total_similarity
+
+
+
+def main():
+    input_file = Path(Path(__file__).parent, 'input.txt')
+    first_list, second_list = parse_input(input_file)
+    distance = calculate_distance(first_list.copy(), second_list.copy())
+    similarity = calculate_similarity(first_list.copy(), second_list.copy())
+    print(f"{distance=}")
+    print(f"{similarity=}")
 
     
 
