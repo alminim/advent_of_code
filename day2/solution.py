@@ -9,10 +9,21 @@ def parse_input(input_file: Path) -> List[List[int]]:
     return parsed_reports
 
 
+def check_safety(report: List[int]) -> bool:
+    is_ascending = report[0] > report[1]
+    for i in range(len(report) - 1):
+        if not (1 <= abs(report[i] - report[i + 1]) <= 3) or (
+            is_ascending != (report[i] > report[i + 1])
+        ):
+            return False
+    return True
+
+
 def main():
     input_file = Path(Path(__file__).parent, "input.txt")
     parsed_input = parse_input(input_file)
-    print(parsed_input)
+    for report in parsed_input:
+        print(check_safety(report))
 
 
 if __name__ == "__main__":
