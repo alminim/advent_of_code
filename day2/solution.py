@@ -19,11 +19,18 @@ def check_safety(report: List[int]) -> bool:
     return True
 
 
+def count_num_safe_reports(reports: List[List[int]]) -> int:
+    total_safe_reports = 0
+    for report in reports:
+        if check_safety(report):
+            total_safe_reports += 1
+    return total_safe_reports
+
+
 def main():
     input_file = Path(Path(__file__).parent, "input.txt")
     parsed_input = parse_input(input_file)
-    for report in parsed_input:
-        print(check_safety(report))
+    print(count_num_safe_reports(parsed_input))
 
 
 if __name__ == "__main__":
