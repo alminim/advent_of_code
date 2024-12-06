@@ -15,12 +15,11 @@ def parse_input(input_file: Path) -> Tuple[List[int], List[int]]:
 
 def calculate_distance(first_list: List[int], second_list: List[int]) -> int:
     total_distance = 0
-    for _ in range(min(len(first_list), len(second_list))):
-        first_min = min(first_list)
-        second_min = min(second_list)
-
-        first_list.remove(first_min)
-        second_list.remove(second_min)
+    first_list.sort()
+    second_list.sort()
+    for i in range(min(len(first_list), len(second_list))):
+        first_min = first_list[i]
+        second_min = second_list[i]
 
         total_distance += abs(first_min - second_min)
     return total_distance
