@@ -39,8 +39,16 @@ def main():
     ordering_rules = instructions[: instructions.index("")]
     update_rules = instructions[instructions.index("") + 1 :]
     create_order(ordering_rules)
-    for update in update_rules:
-        print(check_update_matches_order(update))
+
+    correct_updates = [
+        update for update in update_rules if check_update_matches_order(update)
+    ]
+    print(
+        sum(
+            int(update.split(",")[len(update.split(",")) // 2])
+            for update in correct_updates
+        )
+    )
 
 
 if __name__ == "__main__":
