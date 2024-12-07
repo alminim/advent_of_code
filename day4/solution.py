@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List
+from typing import List, Tuple
 
 
 WORD_TO_FIND = "XMAS"
@@ -43,21 +43,45 @@ def count_words(text_block: List[str]) -> int:
     return total_words
 
 
+def get_subblock(
+    text_block: List[str], center: Tuple[int, int], size: int
+) -> List[str]:
+    subblock: List[str] = list()
+    for line in text_block[center[0] - size // 2 : center[0] + size // 2 + 1]:
+        subblock.append(line[center[1] - size // 2 : center[1] + size // 2 + 1])
+
+    return subblock
+
+
+def check_xmas(input_block: List[str]) -> bool:
+    total_mas = 0
+    for _ in range(4):
+        total_mas += diagonalise_text_block(input_block).count("MAS")
+        input_block = rotate_text_block(input_block)
+
+    return total_mas == 2
+
+
+def count_xmas(text_block: List[str]) -> int:
+    pass
+
+
 def main():
     input_file = Path(Path(__file__).parent, "input.txt")
     input_block = parse_input(input_file)
 
-    total_words = 0
-    for _ in range(4):
-        rotated_text = rotate_text_block(input_block)
-        diagonalised_text = diagonalise_text_block(input_block)
+    # total_words = 0
+    # for _ in range(4):
+    #     rotated_text = rotate_text_block(input_block)
+    #     diagonalised_text = diagonalise_text_block(input_block)
 
-        total_words += count_words(rotated_text)
-        total_words += count_words(diagonalised_text)
+    #     total_words += count_words(rotated_text)
+    #     total_words += count_words(diagonalised_text)
 
-        input_block = rotated_text
+    #     input_block = rotated_text
 
-    print(total_words)
+    print(check_xmas(input_block))
+    # print(get_subblock(input_block, (2, 3), 3))
 
 
 if __name__ == "__main__":
