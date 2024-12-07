@@ -63,13 +63,22 @@ def check_xmas(input_block: List[str]) -> bool:
 
 
 def count_xmas(text_block: List[str]) -> int:
-    pass
+    total_xmas = 0
+    for i in range(1, len(text_block) - 1):
+        for j in range(1, len(text_block[i]) - 1):
+            if text_block[i][j] == "A":
+                subblock = get_subblock(text_block, (i, j), 3)
+                if check_xmas(subblock):
+                    total_xmas += 1
+
+    return total_xmas
 
 
 def main():
     input_file = Path(Path(__file__).parent, "input.txt")
     input_block = parse_input(input_file)
 
+    print(count_xmas(input_block))
     # total_words = 0
     # for _ in range(4):
     #     rotated_text = rotate_text_block(input_block)
@@ -79,9 +88,6 @@ def main():
     #     total_words += count_words(diagonalised_text)
 
     #     input_block = rotated_text
-
-    print(check_xmas(input_block))
-    # print(get_subblock(input_block, (2, 3), 3))
 
 
 if __name__ == "__main__":
