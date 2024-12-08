@@ -1,5 +1,6 @@
 from pathlib import Path
 from typing import List, Tuple
+from functools import cmp_to_key
 
 
 ORDER: List[Tuple[str, str]] = list()
@@ -12,6 +13,15 @@ def parse_input(input_file: Path) -> List[str]:
 def create_order(order_rules: List[str]) -> None:
     for rule in order_rules:
         ORDER.append(tuple(rule.split("|")))
+
+
+def compare_pages(first_page: str, second_page: str) -> int:
+    if (first_page, second_page) in ORDER:
+        return -1
+    elif (second_page, first_page) in ORDER:
+        return 1
+    else:
+        return 0
 
 
 def check_update_matches_order(update: str) -> bool:
@@ -38,6 +48,14 @@ def main():
             for update in correct_updates
         )
     )
+
+    sorted_updates = [
+        sorted(update.split(","), key=cmp_to_key(compare_pages))
+        for update in update_rules
+        if update not in correct_updates
+    ]
+
+    print(sum(int(update[len(update) // 2]) for update in sorted_updates))
 
 
 if __name__ == "__main__":
