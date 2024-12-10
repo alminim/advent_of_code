@@ -4,7 +4,7 @@ from typing import List, Dict, Set, Tuple
 from simpleeval import simple_eval
 
 
-VALID_OPERATORS = {"+", "*"}
+VALID_OPERATORS = {"+", "*", "||"}
 
 
 def parse_input(input_file: Path) -> Tuple[int, List[str]]:
@@ -15,13 +15,20 @@ def parse_input(input_file: Path) -> Tuple[int, List[str]]:
     ]
 
 
+def single_calculation(values: List[str], operator: str) -> int:
+    if operator != "||":
+        return simple_eval(operator.join(values))
+    else:
+        return int("".join(values))
+
+
 def calculate_equation(values: List[str], operators: Tuple[str, ...]) -> int:
-    total = simple_eval(operators[0].join(values[:2]))
+    total = single_calculation(values[:2], operators[0])
     values = values[2:]
     operators = operators[1:]
 
     for value in values:
-        total = simple_eval(str(total) + operators[0] + value)
+        total = single_calculation([str(total), value], operators[0])
         operators = operators[1:]
 
     return total
