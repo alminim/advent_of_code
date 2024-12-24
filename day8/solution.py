@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from itertools import product
+import math
 from pathlib import Path
 from typing import Dict, List, Tuple, Set
 
@@ -44,13 +45,31 @@ def find_difference_vector(
     return second_antenna - first_antenna
 
 
-def find_antinodes(antenna_locations: List[Coordinate]) -> Set[Coordinate]:
+def find_points_on_line(
+    first_antenna: Coordinate, second_antenna: Coordinate, max_x: int
+) -> Set[Coordinate]:
+    points: Set[Coordinate] = set()
+    slope = (second_antenna.y - first_antenna.y) / (second_antenna.x - first_antenna.x)
+    constant = first_antenna.y - slope * first_antenna.x
+    for x in range(max_x):
+        y = slope * x + constant
+        if (int(y) != 0 and math.isclose(y, int(y))) or math.isclose(
+            y, int(0), abs_tol=1e-9
+        ):
+            points.add(Coordinate(int(x), int(y)))
+
+    return points
+
+
+def find_antinodes(
+    antenna_locations: List[Coordinate], map_width: int
+) -> Set[Coordinate]:
     antinodes: Set[Coordinate] = set()
     for index, first_location in enumerate(antenna_locations):
         for second_location in antenna_locations[index + 1 :]:
-            difference = find_difference_vector(first_location, second_location)
-            antinodes.add(first_location + difference * 2)
-            antinodes.add(first_location - difference)
+            antinodes.update(
+                find_points_on_line(first_location, second_location, map_width)
+            )
     return antinodes
 
 
@@ -62,14 +81,17 @@ def main():
     parsed_input = parse_input(input_file)
     antinodes: Set[Coordinate] = set()
     for antenna_type, antenna_locations in parsed_input.items():
-        antinodes.update(find_antinodes(antenna_locations))
+        antinodes.update(find_antinodes(antenna_locations, num_lines))
 
-    antinodes = filter(
-        lambda coordinate: 0 <= coordinate.x < num_lines
-        and 0 <= coordinate.y < num_columns,
-        antinodes,
+    antinodes = list(
+        filter(
+            lambda coordinate: 0 <= coordinate.x < num_lines
+            and 0 <= coordinate.y < num_columns,
+            antinodes,
+        )
     )
-    print(len(list(antinodes)))
+    show_output(input_file, antinodes)
+    print(len(antinodes))
 
 
 def show_output(original_input: Path, output: Set[Coordinate]) -> None:
