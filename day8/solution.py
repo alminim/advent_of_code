@@ -45,31 +45,22 @@ def find_difference_vector(
     return second_antenna - first_antenna
 
 
-def find_points_on_line(
-    first_antenna: Coordinate, second_antenna: Coordinate, max_x: int
-) -> Set[Coordinate]:
-    points: Set[Coordinate] = set()
-    slope = (second_antenna.y - first_antenna.y) / (second_antenna.x - first_antenna.x)
-    constant = first_antenna.y - slope * first_antenna.x
-    for x in range(max_x):
-        y = slope * x + constant
-        if (int(y) != 0 and math.isclose(y, int(y))) or math.isclose(
-            y, int(0), abs_tol=1e-9
-        ):
-            points.add(Coordinate(int(x), int(y)))
-
-    return points
-
-
 def find_antinodes(
-    antenna_locations: List[Coordinate], map_width: int
+    antenna_locations: List[Coordinate], map_border: Coordinate
 ) -> Set[Coordinate]:
     antinodes: Set[Coordinate] = set()
     for index, first_location in enumerate(antenna_locations):
         for second_location in antenna_locations[index + 1 :]:
-            antinodes.update(
-                find_points_on_line(first_location, second_location, map_width)
-            )
+            difference = find_difference_vector(first_location, second_location)
+            antinode = first_location
+            while 0 <= antinode.x < map_border.x and 0 <= antinode.y < map_border.y:
+                antinodes.add(antinode)
+                antinode = antinode + difference
+
+            antinode = first_location
+            while 0 <= antinode.x < map_border.x and 0 <= antinode.y < map_border.y:
+                antinodes.add(antinode)
+                antinode = antinode - difference
     return antinodes
 
 
@@ -80,8 +71,11 @@ def main():
 
     parsed_input = parse_input(input_file)
     antinodes: Set[Coordinate] = set()
+
     for antenna_type, antenna_locations in parsed_input.items():
-        antinodes.update(find_antinodes(antenna_locations, num_lines))
+        antinodes.update(
+            find_antinodes(antenna_locations, Coordinate(num_lines, num_columns))
+        )
 
     antinodes = list(
         filter(
