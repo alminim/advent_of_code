@@ -50,31 +50,25 @@ def find_all_trailheads(map: List[List[int]]) -> List[Coordinate]:
 
 
 def find_all_trail_endings_for_trailhead(
-    map: List[List[Coordinate]],
-    starting_position: Coordinate,
-    visited_locations_in_run: Set[Coordinate],
+    map: List[List[Coordinate]], starting_position: Coordinate
 ) -> Set[Coordinate]:
-    trail_endings: Set[Coordinate] = set()
     current_value = map[starting_position.x][starting_position.y]
-    visited_locations_in_run.add(starting_position)
+    if current_value == 9:
+        return 1
+
+    total_found_trails = 0
     for direction in Direction:
         next_location = starting_position + direction.value
-        if next_location in visited_locations_in_run:
-            continue
         if 0 <= next_location.x < len(map) and 0 <= next_location.y < len(map[0]):
             next_value = map[next_location.x][next_location.y]
             if next_value != current_value + 1:
                 continue
-            if next_value == 9:
-                trail_endings.add(next_location)
             else:
-                trail_endings.update(
-                    find_all_trail_endings_for_trailhead(
-                        map, next_location, visited_locations_in_run
-                    )
+                total_found_trails += find_all_trail_endings_for_trailhead(
+                    map, next_location
                 )
 
-    return trail_endings
+    return total_found_trails
 
 
 def main():
@@ -83,11 +77,8 @@ def main():
     trailheads = find_all_trailheads(parsed_input)
     total_score = 0
     for trailhead in trailheads:
-        visited_locations_from_trailhead: Set[Coordinate] = set()
-        found_trail_endings = find_all_trail_endings_for_trailhead(
-            parsed_input, trailhead, visited_locations_from_trailhead
-        )
-        total_score += len(found_trail_endings)
+        found_trails = find_all_trail_endings_for_trailhead(parsed_input, trailhead)
+        total_score += found_trails
 
     print(total_score)
 
